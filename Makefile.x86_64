@@ -1,0 +1,20 @@
+# Jivelite makefile
+
+PREFIX ?= ${HOME}/source/jivelite
+
+all: srcs libs
+
+srcs:
+	tar -xzf scripts/buildosx-squeezeplay.tar.gz
+	tar -xzf scripts/buildosx-luajit.tar.gz
+	cd src; PREFIX=$(PREFIX) make -f Makefile.x86_64
+
+libs: lib/lua
+
+lib/lua:
+	cd lib-src; PREFIX=$(PREFIX) make -f Makefile.x86_64
+
+clean:
+	rm -Rf lib include
+	cd src; PREFIX=$(PREFIX) make -f Makefile.x86_64 clean
+	cd lib-src; PREFIX=$(PREFIX) make -f Makefile.x86_64 clean

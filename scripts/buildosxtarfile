@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ ! -d pkg ]; then
+	echo "Need to create pkg folder first!"
+	exit 1
+fi
+
+make -f Makefile.x86_64 clean
+
+GITVERSION=`git rev-parse --short HEAD`
+
+export CFLAGS="-DOPTJIVELITE -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -mmacosx-version-min=10.7"
+export LDFLAGS="-arch x86_64 -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -mmacosx-version-min=10.7 -L/usr/lib"
+
+make -f Makefile.x86_64
+
+cd pkg
+
+if [ -d opt ]; then
+	sudo rm -rf opt
+fi
+
+mkdir -p opt/jivelite/{bin,lib,share}
+cp -p ../bin/jivelite opt/jivelite/bin
+
+cp -pr ../lib/lua opt/jivelite/lib
+cp -pr ../share/lua opt/jivelite/share
+cp -pr ../share/jive opt/jivelite/share
+
+rm opt/jivelite/share/jive/applets/JogglerSkin/images/UNOFFICIAL/VUMeter/vu_analog_25seq_[ac-vx-z].png
+rm opt/jivelite/share/jive/applets/WQVGAsmallSkin/images/UNOFFICIAL/VUMeter/vu_analog_25seq_[ac-vx-z].png
+
+sudo chown -Rh root:wheel opt/jivelite
+
+cd opt
+tar -czf ${HOME}/source/jivelite/jivelite-0.1-`date +%Y%m%d`git${GITVERSION}-osx-x86_64.tar.gz jivelite

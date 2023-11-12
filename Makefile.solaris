@@ -1,0 +1,18 @@
+# Jivelite makefile
+
+# set PREFIX for location of luajit include and libs
+PREFIX ?= $(HOME)/source/jivelite
+
+all: srcs
+
+srcs:
+	gtar -xzf scripts/buildsol-include.tar.gz
+	gtar -xzf scripts/buildsol-lib.tar.gz
+	cd lib-src; PREFIX=$(PREFIX) make -f Makefile.solaris
+	cd src; PREFIX=$(PREFIX) make -f Makefile.solaris
+
+clean:
+	rm -Rf lib
+	cd src; make -f Makefile.solaris clean
+	cd lib-src; make -f Makefile.solaris clean
+
